@@ -87,6 +87,7 @@ class FileBinderFilter:
         self.ignore_patterns = None
         self.list_return_files: list[Path] = list()
         self.current_dir: Path = Path.cwd()
+
     def filters(self) -> list[Path]:
         if not self.ignore_file:
             self.ignore_patterns: list[str] | None = self._conversion()
@@ -98,19 +99,14 @@ class FileBinderFilter:
                 ):
                     continue
                 if self.ignore_patterns is not None and any(
-                    i == str(file)
-                    for i in self.ignore_patterns
+                    i == str(file) for i in self.ignore_patterns
                 ):
                     continue
                 if self.ignore_patterns is not None and any(
-                    str(file).startswith(i + "/")
-                    for i in self.ignore_patterns
+                    str(file).startswith(i + "/") for i in self.ignore_patterns
                 ):
                     continue
-                if (
-                    file == self.name_file_binder
-                    or file == self.name_file_ignore
-                ):
+                if file == self.name_file_binder or file == self.name_file_ignore:
                     continue
                 self.list_return_files.append(file)
         return self.list_return_files

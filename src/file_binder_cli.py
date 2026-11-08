@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Annotated
 import typer
-from src.FileBinder import FileBinder
+from FileBinder import FileBinder
 
 app = typer.Typer(
     name="filebinder",
