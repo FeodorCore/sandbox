@@ -1,0 +1,64 @@
+@startuml
+
+skinparam linetype ortho
+hide circle
+
+entity "User" as user {
+  * id : INTEGER <<PK>>
+  * telegram_id : INTEGER <<UNIQUE NOT NULL>>
+  username : TEXT
+  is_admin : BOOLEAN
+}
+
+entity "Category" as category {
+  * id : INTEGER <<PK>>
+  * name : TEXT
+}
+
+entity "Lesson" as lesson {
+  * id : INTEGER <<PK>>
+  * category_id : INTEGER <<FK>>
+  sort_order : INTEGER
+  title : TEXT
+  content : TEXT
+}
+
+entity "Question" as question {
+  * id : INTEGER <<PK>>
+  * lesson_id : INTEGER <<FK>>
+  text : TEXT
+  sort_order : INTEGER
+}
+
+entity "AnswerOption" as answer_option {
+  * id : INTEGER <<PK>>
+  * question_id : INTEGER <<FK>>
+  text : TEXT
+  is_correct : BOOLEAN
+  sort_order : INTEGER
+}
+
+entity "UserProgress" as user_progress {
+  * id : INTEGER <<PK>>
+  * user_id : INTEGER <<FK>>
+  * lesson_id : INTEGER <<FK>>
+  learned : BOOLEAN
+  completed_at : DATETIME
+}
+
+entity "UserAnswer" as user_answer {
+  * id : INTEGER <<PK>>
+  * user_id : INTEGER <<FK>>
+  * answer_option_id : INTEGER <<FK>>
+  is_correct : BOOLEAN
+  answered_at : DATETIME
+}
+
+category ||--o{ lesson
+lesson ||--o{ question
+question ||--o{ answer_option
+user ||--o{ user_progress
+lesson ||--o{ user_progress
+user ||--o{ user_answer
+answer_option ||--o{ user_answer
+@enduml

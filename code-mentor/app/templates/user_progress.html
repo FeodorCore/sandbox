@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Прогресс пользователя {{ user.id }}{% endblock %}
+{% block header_title %}Прогресс пользователя #{{ user.id }}{% endblock %}
+{% block content %}
+<div class="mb-6 flex items-center justify-between flex-wrap gap-4">
+    <div class="flex items-center gap-3">
+        <a href="/admin/ui/users" class="inline-flex items-center px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm">
+            <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i> Назад
+        </a>
+        <h2 class="text-lg font-semibold text-gray-900">
+            TG: {{ user.telegram_id }} {% if user.username %}(@{{ user.username }}){% endif %}
+        </h2>
+    </div>
+    <form method="GET" action="/admin/ui/users/{{ user.id }}/progress" class="flex items-center gap-2">
+        <select name="category_id" class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 outline-none bg-white">
+            <option value="">Все категории</option>
+            {% for cat in categories %}
+            <option value="{{ cat.id }}" {{ "selected" if selected_category_id == cat.id else "" }}>{{ cat.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="px-3 py-1.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition text-sm shadow-sm">Фильтр</button>
+    </form>
+</div>
+
+{% if progress_data %}
+<div class="space-y-6">
+    {% for lesson in progress_data %}
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <div class="flex items-center gap-2 text-sm text-gray-500 mb-1">
+                    <i data-lucide="folder" class="w-4 h-4"></i> {{ lesson.category_name }}
+                    <span class="mx-1">→</span>
+                    <i data-lucide="book-open" class="w-4 h-4"></i> {{ lesson.lesson_title }}
+                </div>
+                <div class="flex items-center gap-3 mt-2">
+                    {% if lesson.learned %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-50 text-success-700 border border-success-200">
+                        <i data-lucide="check-circle" class="w-3 h-3 mr-1"></i> Изучено
+                    </span>
+                    {% else %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-warning-50 text-warning-700 border border-warning-200">
+                        <i data-lucide="clock" class="w-3 h-3 mr-1"></i> В процессе
+                    </span>
+                    {% endif %}
+                    {% if lesson.completed_at %}
+                    <span class="text-xs text-gray-500">Завершено: {{ lesson.completed_at }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <span class="text-xs font-mono bg-gray-100 px-2 py-1 rounded text-gray-600">Порядок: {{ lesson.sort_order }}</span>
+        </div>
+
+        {% if lesson.answers %}
+        <div class="p-6">
+            <h4 class="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                <i data-lucide="help-circle" class="w-4 h-4"></i> Ответы на тесты
+            </h4>
+            <div class="overflow-x-auto rounded-lg border border-gray-200">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-gray-50 text-gray-600 font-medium">
+                        <tr>
+                            <th class="px-4 py-3">Вопрос</th>
+                            <th class="px-4 py-3">Ответ пользователя</th>
+                            <th class="px-4 py-3">Правильный ответ</th>
+                            <th class="px-4 py-3 text-center">Результат</th>
+                            <th class="px-4 py-3 text-right">Время</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {% for ans in lesson.answers %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3 text-gray-800">{{ ans.question_text }}</td>
+                            <td class="px-4 py-3 text-gray-600">{{ ans.user_answer_text }}</td>
+                            <td class="px-4 py-3 text-gray-600">{{ ans.correct_answer_text or "—" }}</td>
+                            <td class="px-4 py-3 text-center">
+                                {% if ans.is_correct %}
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-success-50 text-success-700">Верно</span>
+                                {% else %}
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-danger-50 text-danger-700">Неверно</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-3 text-right text-xs text-gray-500">{{ ans.answered_at or "—" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="p-6 text-center text-gray-500 text-sm italic bg-gray-50">
+            Тесты по этому уроку ещё не проходились.
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="bg-warning-50 border border-warning-200 rounded-xl p-8 text-center text-warning-800">
+    <i data-lucide="info" class="w-8 h-8 mx-auto mb-2 text-warning-500"></i>
+    <p class="font-medium">Прогресс не найден</p>
+    <p class="text-sm mt-1">Пользователь ещё не открывал уроки или не выбран фильтр с данными.</p>
+</div>
+{% endif %}
+{% endblock %}
