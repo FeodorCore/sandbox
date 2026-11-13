@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "filebinder"
+version = "1.0.1"
+dependencies = ["typer==0.24.1"]
+
+[project.scripts]
+filebinder = "file_binder_cli:app"
+
+[tool.setuptools]
+package-dir = {"" = "src"}   
+py-modules = ["file_binder_cli", "FileBinder"]
