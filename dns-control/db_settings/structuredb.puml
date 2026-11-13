@@ -1,0 +1,83 @@
+@startuml
+!theme plain
+hide circle
+skinparam linetype ortho
+
+entity "category" {
+  *category_id : INT <<PK>>
+  --
+  name : TEXT
+}
+
+entity "supplier" {
+  *supplier_id : INT <<PK>>
+  --
+  name : TEXT
+  phone : TEXT
+  email : TEXT
+}
+
+entity "product" {
+  *product_id : INT <<PK>>
+  --
+  name : TEXT
+  description : TEXT
+  current_price : DECIMAL
+  last_purchase_price : DECIMAL
+  average_cost : DECIMAL
+  stock_quantity : INT
+  *category_id : INT <<FK>>
+}
+
+entity "supply" {
+  *supply_id : INT <<PK>>
+  --
+  *supplier_id : INT <<FK>>
+  supply_date : DATE
+  total_cost : DECIMAL
+}
+
+entity "supply_item" {
+  *supply_item_id : INT <<PK>>
+  --
+  *supply_id : INT <<FK>>
+  *product_id : INT <<FK>>
+  quantity : INT
+  unit_purchase_price : DECIMAL
+}
+
+entity "customer" {
+  *customer_id : INT <<PK>>
+  --
+  name : TEXT
+  phone : TEXT
+  email : TEXT
+}
+
+entity "sale" {
+  *sale_id : INT <<PK>>
+  --
+  customer_id : INT <<FK>>
+  sale_datetime : TIMESTAMP
+  total_amount : DECIMAL
+}
+
+entity "sale_item" {
+  *sale_item_id : INT <<PK>>
+  --
+  *sale_id : INT <<FK>>
+  *product_id : INT <<FK>>
+  quantity : INT
+  unit_sale_price : DECIMAL
+  unit_cost_price : DECIMAL
+}
+
+category ||--o{ product
+supplier ||--o{ supply
+supply ||--o{ supply_item
+product ||--o{ supply_item
+customer ||--o{ sale
+sale ||--o{ sale_item
+product ||--o{ sale_item
+
+@enduml
